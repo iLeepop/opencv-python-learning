@@ -13,8 +13,8 @@ rtsp_url = "rtsp://admin:abc12345@192.168.1.40:554/Streaming/Channels/301"
 gst_pipeline = f"rtspsrc location={rtsp_url} latency=0 ! decodebin ! videoconvert ! appsink"
 
 # 使用 OpenCV 打开 GStreamer 管道
-# cap = cv2.VideoCapture(gst_pipeline, cv2.CAP_GSTREAMER)
-cap = cv2.VideoCapture('../asset/C0057.mp4')
+cap = cv2.VideoCapture(gst_pipeline, cv2.CAP_GSTREAMER)
+# cap = cv2.VideoCapture('../asset/C0057.mp4')
 
 if not cap.isOpened():
     print("Error opening video stream or file")
@@ -27,19 +27,24 @@ fourcc = cv2.VideoWriter_fourcc(*"mp4v")
 writer = cv2.VideoWriter(f"./output-{time.time()}.mp4", fourcc, fps, (int(width), int(height)), True)
 
 # cap = cv2.VideoCapture('C:/Users/Administrator/Desktop/C0057.mp4')
+# 每隔10帧检测一次
 while True:
+    frame_jump = 0
     ret, frame = cap.read()
     if ret is False:
         break
     # 人脸检测
-    frame = cv2.resize(frame, (640, 480))
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    boxes, weights = hog.detectMultiScale(gray, winStride=(8, 8), padding=(32, 32), scale=1.05)
-    boxes = np.array([[x, y, x + w, y + h] for (x, y, w, h) in boxes])
+    if frame_jump == 10:
+        frame = cv2.resize(frame, (640, 480))
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        boxes, weights = hog.detectMultiScale(gray, winStride=(8, 8), padding=(32, 32), scale=1.05)
+        boxes = np.array([[x, y, x + w, y + h] for (x, y, w, h) in boxes])
 
-    for (xA, yA, xB, yB) in boxes:
-        cv2.rectangle(frame, (xA, yA), (xB, yB), (0, 0, 255), 2)
-
+        for (xA, yA, xB, yB) in boxes:
+            cv2.rectangle(frame, (xA, yA), (xB, yB), (0, 0, 255), 2)
+        frame_jump = 0
+    else:
+        frame_jump += 1
     writer.write(frame.astype('uint8'))
     cv2.imshow("frame", frame)
     # 绘制检测矩形

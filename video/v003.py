@@ -36,43 +36,56 @@ writer = cv2.VideoWriter(f"./output-{time.time()}.mp4", fourcc, fps, (int(width)
 
 # cap = cv2.VideoCapture('C:/Users/Administrator/Desktop/C0057.mp4')
 while True:
+    jump_frame = 60
+    left = 0
+    right = 0
+    top = 0
+    bottom = 0
+    score = 0
+
     ret, image = cap.read()
     if ret is False:
         break
     # 人脸检测
-    h, w = image.shape[:2]
-    blobImage = cv2.dnn.blobFromImage(image, 1.0, (300, 300), (104.0, 177.0, 123.0), False, False)
-    net.setInput(blobImage)
-    cvOut = net.forward()
+    if jump_frame == 60:
+        h, w = image.shape[:2]
+        blobImage = cv2.dnn.blobFromImage(image, 1.0, (300, 300), (104.0, 177.0, 123.0), False, False)
+        net.setInput(blobImage)
+        cvOut = net.forward()
 
-    # Put efficiency information.
-    t, _ = net.getPerfProfile()
-    fps = 1000 / (t * 1000.0 / cv2.getTickFrequency())
-    label = 'FPS: %.2f' % fps
-    cv2.putText(image, label, (0, 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0))
+        # 放置视频信息
+        t, _ = net.getPerfProfile()
+        fps = 1000 / (t * 1000.0 / cv2.getTickFrequency())
+        label = 'FPS: %.2f' % fps
+        cv2.putText(image, label, (0, 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0))
 
-    # 绘制检测矩形
-    for detection in cvOut[0, 0, :, :]:
-        # 获取置信度
-        score = float(detection[2])
-        # 获取类别 (如果有对应的类名
-        objIndex = int(detection[1])
-        if score > 0.5:
-            # 获取左上角坐标的 x
-            left = detection[3]*w
-            # 获取左上角坐标的 y
-            top = detection[4]*h
-            # 获取右下角坐标的 x
-            right = detection[5]*w
-            # 获取右下角坐标的 y
-            bottom = detection[6]*h
+        # 绘制检测矩形
+        for detection in cvOut[0, 0, :, :]:
+            # 获取置信度
+            score = float(detection[2])
+            # 获取类别 (如果有对应的类名
+            objIndex = int(detection[1])
+            if score > 0.5:
+                # 获取左上角坐标的 x
+                left = detection[3]*w
+                # 获取左上角坐标的 y
+                top = detection[4]*h
+                # 获取右下角坐标的 x
+                right = detection[5]*w
+                # 获取右下角坐标的 y
+                bottom = detection[6]*h
 
-            # 绘制目标区域
-            # cv2.rectangle()
-            # param1: 左上角坐标
-            # param2: 右下角坐标
-            cv2.rectangle(image, (int(left), int(top)), (int(right), int(bottom)), (255, 0, 0), thickness=2)
-            cv2.putText(image, "score:%.2f"%score, (int(left), int(top)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
+                # 绘制目标区域
+                # cv2.rectangle()
+                # param1: 左上角坐标
+                # param2: 右下角坐标
+                cv2.rectangle(image, (int(left), int(top)), (int(right), int(bottom)), (255, 0, 0), thickness=2)
+                cv2.putText(image, "score:%.2f"%score, (int(left), int(top)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
+        jump_frame = 0
+    else:
+        cv2.rectangle(image, (int(left), int(top)), (int(right), int(bottom)), (255, 0, 0), thickness=2)
+        cv2.putText(image, "score:%.2f" % score, (int(left), int(top)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
+        jump_frame += 1
     cv2.imshow('face-detection-demo', image)
     writer.write(image)
     c = cv2.waitKey(1)

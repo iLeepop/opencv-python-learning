@@ -1,0 +1,7 @@
+# 音视频文件
+*.mp4
+*.png
+*.jpg
+*.avi
+# 模型
+*.caffemodel
