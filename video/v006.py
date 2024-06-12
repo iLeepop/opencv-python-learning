@@ -3,9 +3,9 @@ import cv2
 import numpy as np
 
 
-rtsp_url = 'rtsp://admin:abc12345@192.168.1.40:554/Streaming/Channels/101'
-gst_pipeline = f'rtspsrc location={rtsp_url} latency=0 ! decodebin ! videoconvert ! appsink'
-# gst_pipeline = '../asset/worker-zone-detection.mp4'
+# rtsp_url = 'rtsp://admin:abc12345@192.168.1.40:554/Streaming/Channels/101'
+# gst_pipeline = f'rtspsrc location={rtsp_url} latency=0 ! decodebin ! videoconvert ! appsink'
+gst_pipeline = '../asset/worker-zone-detection.mp4'
 
 
 global img
@@ -40,8 +40,9 @@ def draw_range(event, x, y, flags, param):
             tracker.init(frame, bbox)
             isTracking = True
 
+
 if __name__ == '__main__':
-    tracker = cv2.TrackerKCF.create()
+    tracker = cv2.TrackerCSRT.create()
     isTracking = False
     cv2.namedWindow('Tracking')
     cap = cv2.VideoCapture(gst_pipeline, cv2.CAP_GSTREAMER)
@@ -68,7 +69,7 @@ if __name__ == '__main__':
             else:
                 print('Tracking failure detected')
                 isTracking = False
-                tracker = cv2.TrackerKCF.create()
+                tracker = cv2.TrackerCSRT.create()
             now_frame = 0
         elif isTracking:
             now_frame += 1

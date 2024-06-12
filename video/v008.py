@@ -3,9 +3,9 @@ import cv2
 import numpy as np
 
 
-# rtsp_url = 'rtsp://admin:abc12345@192.168.1.40:554/Streaming/Channels/101'
-# gst_pipeline = f'rtspsrc location={rtsp_url} latency=0 ! decodebin ! videoconvert ! appsink'
-gst_pipeline = '../asset/worker-zone-detection.mp4'
+rtsp_url = 'rtsp://admin:abc12345@192.168.1.40:554/Streaming/Channels/101'
+gst_pipeline = f'rtspsrc location={rtsp_url} latency=0 ! decodebin ! videoconvert ! appsink'
+# gst_pipeline = '../asset/worker-zone-detection.mp4'
 
 
 global img
@@ -36,7 +36,7 @@ def draw_range(event, x, y, flags, param):
             # 创建跟踪范围
             bbox = (min_x, min_y, width, height)
             # 添加跟踪器
-            trackers.add(cv2.legacy.TrackerKCF_create(), frame, bbox)
+            trackers.add(cv2.legacy.TrackerCSRT_create(), frame, bbox)
             isTracking = True
 
 
