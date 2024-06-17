@@ -42,10 +42,11 @@ def draw_range(event, x, y, flags, param):
 
 
 if __name__ == '__main__':
-    tracker = cv2.TrackerCSRT.create()
+    tracker = cv2.TrackerCSRT_create()
     isTracking = False
     cv2.namedWindow('Tracking')
-    cap = cv2.VideoCapture(gst_pipeline, cv2.CAP_GSTREAMER)
+    # cap = cv2.VideoCapture(gst_pipeline, cv2.CAP_GSTREAMER)
+    cap = cv2.VideoCapture(0)
     if not cap.isOpened():
         print("Error opening video stream or file")
         exit(1)

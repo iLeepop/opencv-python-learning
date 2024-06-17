@@ -18,7 +18,7 @@ net = cv.dnn.readNetFromCaffe(config_text, model_bin)
 # gst_pipeline = f'rtspsrc location={rtsp_url} latency=0 ! decodebin ! videoconvert ! appsink'
 gst_pipeline = '../asset/soccer.mp4'
 cap = cv.VideoCapture(gst_pipeline, cv.CAP_GSTREAMER)
-
+# cap = cv.VideoCapture(0)
 
 global cvOut
 global bbox
@@ -27,7 +27,7 @@ global tracker
 
 
 def create_tracker():
-    return cv.TrackerCSRT_create()
+    return cv.TrackerKCF_create()
 
 
 def detect_object(frame0):
@@ -67,19 +67,19 @@ def process_frame(frame0):
 def track_object(frame0):
     print("跟踪目标")
     global isTracking, tracker
-    t, _ = net.getPerfProfile()
-    fps = 1000 / (t * 1000.0 / cv.getTickFrequency())
-    print("FPS: {:.2f}".format(fps))
+    # t, _ = net.getPerfProfile()
+    # fps = 1000 / (t * 1000.0 / cv.getTickFrequency())
+    # print("FPS: {:.2f}".format(fps))
     ok, b = tracker.update(frame0)
     if ok:
         p1 = (int(b[0]), int(b[1]))
         p2 = (int(b[0] + b[2]), int(b[1] + b[3]))
         cv.rectangle(frame0, p1, p2, (0, 0, 255), 2, 1)
     # 根据FPS判断跟踪状态
-    elif fps < 27:
-        print("因帧率过低，停止跟踪")
-        isTracking = False
-        tracker = create_tracker()
+    # elif fps < 27:
+    #     print("因帧率过低，停止跟踪")
+    #     isTracking = False
+    #     tracker = create_tracker()
     else:
         print("跟踪失败，停止跟踪")
         isTracking = False

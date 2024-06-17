@@ -21,7 +21,8 @@ gst_pipeline = f"rtspsrc location={rtsp_url} latency=0 ! decodebin ! videoconver
 
 # 检测
 # cap = cv2.VideoCapture(gst_pipeline, cv2.CAP_GSTREAMER)
-cap = cv2.VideoCapture('../asset/worker-zone-detection.mp4')
+# cap = cv2.VideoCapture('../asset/worker-zone-detection.mp4')
+cap = cv2.VideoCapture(0)
 # 跳帧
 should_jump = 10
 cvOut = None

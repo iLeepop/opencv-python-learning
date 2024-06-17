@@ -22,8 +22,8 @@ rtsp_url = "rtsp://admin:abc12345@192.168.1.40:554/Streaming/Channels/301"
 gst_pipeline = f"rtspsrc location={rtsp_url} latency=0 ! decodebin ! videoconvert ! appsink"
 
 # 使用 OpenCV 打开 GStreamer 管道
-cap = cv2.VideoCapture(gst_pipeline, cv2.CAP_GSTREAMER)
-
+# cap = cv2.VideoCapture(gst_pipeline, cv2.CAP_GSTREAMER)
+cap = cv2.VideoCapture(0)
 if not cap.isOpened():
     print("Error opening video stream or file")
     exit(0)
@@ -34,20 +34,22 @@ fps = cap.get(cv2.CAP_PROP_FPS)
 fourcc = cv2.VideoWriter_fourcc(*"mp4v")
 writer = cv2.VideoWriter(f"./output-{time.time()}.mp4", fourcc, fps, (int(width), int(height)), True)
 
+
+jump_frame = 6
+left = 0
+right = 0
+top = 0
+bottom = 0
+score = 0
+
 # cap = cv2.VideoCapture('C:/Users/Administrator/Desktop/C0057.mp4')
 while True:
-    jump_frame = 60
-    left = 0
-    right = 0
-    top = 0
-    bottom = 0
-    score = 0
 
     ret, image = cap.read()
     if ret is False:
         break
     # 人脸检测
-    if jump_frame == 60:
+    if jump_frame == 6:
         h, w = image.shape[:2]
         blobImage = cv2.dnn.blobFromImage(image, 1.0, (300, 300), (104.0, 177.0, 123.0), False, False)
         net.setInput(blobImage)

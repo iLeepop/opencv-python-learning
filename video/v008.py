@@ -36,7 +36,7 @@ def draw_range(event, x, y, flags, param):
             # 创建跟踪范围
             bbox = (min_x, min_y, width, height)
             # 添加跟踪器
-            trackers.add(cv2.legacy.TrackerCSRT_create(), frame, bbox)
+            trackers.add(cv2.legacy.TrackerKCF_create(), frame, bbox)
             isTracking = True
 
 
@@ -48,7 +48,8 @@ if __name__ == '__main__':
     cv2.namedWindow('Tracking')
     # 设置鼠标回调函数
     cv2.setMouseCallback('Tracking', draw_range)
-    cap = cv2.VideoCapture(gst_pipeline, cv2.CAP_GSTREAMER)
+    # cap = cv2.VideoCapture(gst_pipeline, cv2.CAP_GSTREAMER)
+    cap = cv2.VideoCapture(0)
     if not cap.isOpened():
         print("Error opening video stream or file")
         exit(1)
